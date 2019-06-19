@@ -79,11 +79,14 @@ impl DataChunk {
         DataChunk {
             data_chunk_id: SUB_CHUNK_2_ID,
             data_chunk_size: size,
-            data: Vec::new(),
+            data: vec![0_i16; size as usize],
         }
     }
-    pub fn add_data(&mut self, value: i16) {
-        self.data.push(value);
+    pub fn add_data(&mut self, idx: usize, mut value: i16) {
+        std::mem::swap(
+            &mut (self.data[idx]),
+            &mut value
+            );
     }
     pub fn write<F: Write>(self, file: &mut F) -> std::io::Result<()> {
         file.write_u32::<BigEndian>(self.data_chunk_id)?;

@@ -24,8 +24,8 @@ fn main() -> std::io::Result<()> {
 
     pcm.add_data(f0, amplitude);
 
-    for d in pcm.data.iter() {
-        dt.add_data(*d);
+    for (i, d) in pcm.data.iter().enumerate() {
+        dt.add_data(i, *d);
     }
     
     dt.write(&mut file)?;
