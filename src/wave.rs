@@ -210,6 +210,7 @@ pub trait ExampleWave {
     fn sine_wave(&mut self, a: f64, f0: f64);
     fn saw_wave(&mut self, f0: f64);
     fn square_wave(&mut self, f0: f64);
+    fn triangle_wave(&mut self, f0: f64);
 }
 
 impl ExampleWave for MonoPcm {
@@ -238,6 +239,22 @@ impl ExampleWave for MonoPcm {
         while i <= 44 {
             for n in 0..(self.length as usize) {
                 self.s[n] += 1.0 / (i as f64) *
+                    (2.0 * PI * (i as f64) * f0 * (n as f64) /
+                     (self.fs as f64)).sin();
+            }
+            i += 2;
+        }
+        let gain: f64 = 0.1;
+        for n in 0..(self.length as usize) {
+            self.s[n] *= gain;
+        }
+    }
+    fn triangle_wave(&mut self, f0: f64) {
+        let mut i: usize = 1;
+        while i <= 44 {
+            for n in 0..(self.length as usize) {
+                self.s[n] += 1.0 / (i as f64) / (i as f64) *
+                    (PI * (i as f64) / 2.0).sin() *
                     (2.0 * PI * (i as f64) * f0 * (n as f64) /
                      (self.fs as f64)).sin();
             }
@@ -284,6 +301,27 @@ impl ExampleWave for StereoPcm {
                     (2.0 * PI * (i as f64) * f0 * (n as f64) /
                      (self.fs as f64)).sin();
                 self.sr[n] += 1.0 / (i as f64) *
+                    (2.0 * PI * (i as f64) * f0 * (n as f64) /
+                     (self.fs as f64)).sin();
+            }
+            i += 2;
+        }
+        let gain: f64 = 0.1;
+        for n in 0..(self.length as usize) {
+            self.sl[n] *= gain;
+            self.sr[n] *= gain;
+        }
+    }
+    fn triangle_wave(&mut self, f0: f64) {
+        let mut i: usize = 1;
+        while i <= 44 {
+            for n in 0..(self.length as usize) {
+                self.sl[n] += 1.0 / (i as f64) / (i as f64) *
+                    (PI * (i as f64) / 2.0).sin() *
+                    (2.0 * PI * (i as f64) * f0 * (n as f64) /
+                     (self.fs as f64)).sin();
+                self.sr[n] += 1.0 / (i as f64) / (i as f64) *
+                    (PI * (i as f64) / 2.0).sin() *
                     (2.0 * PI * (i as f64) * f0 * (n as f64) /
                      (self.fs as f64)).sin();
             }
